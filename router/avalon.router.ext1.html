@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>路由系统</title>
+    <script src="../avalon.js"></script>
+    <script>
+        require(["mmRouter","router/avalon.wiscontainer"], function() {
+            var model = avalon.define({
+                $id: "test",
+                wiscontainer:{},
+                routersParam:[],
+                click:null
+            });
+            model.click = function(){
+                avalon.router.navigate("/abc1/combox/1234");
+            }
+            model.routersParam = [
+                {path:'/abc1', text:'菜单1', controller:'combox'},
+                {path:'/abc2', text:'菜单2', controller:'smartgrid'},
+                {path:'/abc3', text:'菜单3', controller:'slider'},
+                {path:'/abc4', text:'菜单4', controller:'textbox'}];
+
+            function processor(){
+                var controller = this.params.controller;
+                var title = this.params.title;
+                avalon.vmodels['$wiscontainer'].load(controller,title);
+
+            }
+
+            avalon.scan();
+            for(var i = 0; i < model.routersParam.length; i++){
+                avalon.router.get(model.routersParam[i].path+"/:controller/:title", processor);
+            }
+            avalon.history.start({
+                basepath: "/"
+            });
+
+        })
+    </script>
+</head>
+<body >
+<div ms-controller="test">
+    <table width="100%" height="300">
+        <tr>
+            <td width="250">
+                <ul ms-repeat-el="routersParam">
+                    <li ><a ms-href="#!{{el.path}}/{{el.controller}}/{{el.text}}">{{el.text}}</a></li>
+                </ul>
+            </td>
+            <td>
+                <div ms-widget="wiscontainer, $wiscontainer"></div>
+            </td>
+        </tr>
+    </table>
+    <p id="eee" ms-click="click()">会定位到这里</p>
+</div>
+
+</body>
+</html>
