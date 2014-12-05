@@ -462,7 +462,7 @@ define(["avalon",
                 tableTemplate = vmodel.addRow(vmodel._getTemplate(data ? vmodel.data.slice(arrLen) : data, data ? arrLen : 0), vmodel.columns.$model, vmodels)
                 rows = avalon.parseHTML(tableTemplate)
                 containerWrapper.appendChild(rows)
-                if (selectable && selectable.type === 'Checkbox') {
+                if (selectable && (selectable.type === 'Checkbox'|| selectable.type === 'Radio')) {
                     var allSelected = isSelectAll(vmodel.data);
                     vmodel._allSelected = allSelected;
                     getSelectedData(vmodel);
@@ -633,7 +633,7 @@ define(["avalon",
         if (!options.selectable)
             return;
         var type = options.selectable.type, container = options._container;
-        if (type === 'Checkbox') {
+        if (type === 'Checkbox' || type === "Radio") {
             avalon.bind(container, 'click', function (event) {
                 var target = event.target, $target = avalon(target), $tr = avalon(target.parentNode.parentNode), datas = options.data, onSelectAll = options.onSelectAll, enabledData = options._enabledData, disabledData = options._disabledData, dataIndex = $target.attr('data-index');
                 if (!$target.attr('data-role') || dataIndex === null) {
@@ -643,6 +643,9 @@ define(["avalon",
                     var rowData = datas[dataIndex], isSelected = target.checked;
                     if (isSelected) {
                         options.selectable.type === 'Checkbox' ? $tr.addClass('oni-smartgrid-selected') : 0;
+                        if(options.selectable.type === 'Radio'){
+                            enabledData.splice(0, enabledData.length);
+                        }
                         rowData.selected = true;
                         avalon.Array.ensure(enabledData, rowData);
                     } else {
@@ -671,6 +674,7 @@ define(["avalon",
             });
         }
     }
+
     function dataFracte(vmodel) {
         var data = vmodel.data, enabledData = vmodel._enabledData = [], disabledData = vmodel._disabledData = [];
         data.forEach(function (dataItem, index) {
